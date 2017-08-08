@@ -29,7 +29,7 @@ void UGrabber::BeginPlay()
 void UGrabber::FindPhysicsComponent()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle == nullptr)
+	if (!PhysicsHandle)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s missing physics handle component"), *GetOwner()->GetName())
 	}
@@ -61,6 +61,7 @@ void UGrabber::Grab()
 	/// If we hit somthing then attach a physics handle
 	if(ActorHit)
 	{
+		if (!PhysicsHandle) { return; }
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab,
 			NAME_None,	// no bones needed
@@ -72,6 +73,7 @@ void UGrabber::Grab()
 
 void UGrabber::Released()
 {
+	if (!PhysicsHandle) { return; }
 	PhysicsHandle->ReleaseComponent();
 }
 
@@ -80,6 +82,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!PhysicsHandle) { return; }
 	// if the physics handle is attached
 	if(PhysicsHandle->GrabbedComponent)
 	{
